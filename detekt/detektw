@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+# Download and run detekt cli
+
+DETEKT_VERSION="1.17.1"
+
+if [[ -z $DETEKT_DIR ]]; then
+  DETEKT_DIR="cache/detekt"
+fi
+
+DETEKT_DIR="$DETEKT_DIR/$DETEKT_VERSION"
+
+if [[ ! -d $DETEKT_DIR ]]; then
+  mkdir -p $DETEKT_DIR
+fi
+
+FILE_CLI="detekt-cli-$DETEKT_VERSION-all.jar"
+FILE_FORMATTING="detekt-formatting-$DETEKT_VERSION.jar"
+
+pushd $DETEKT_DIR
+
+if [[ ! -f $FILE_CLI ]]; then
+  echo "Downloading $FILE_CLI..."
+  curl -LGO# "https://github.com/detekt/detekt/releases/download/v1.17.1/$FILE_CLI"
+fi
+
+if [[ ! -f $FILE_FORMATTING ]]; then
+  echo "Downloading $FILE_FORMATTING..."
+  curl -LGO# "https://github.com/detekt/detekt/releases/download/v1.17.1/$FILE_FORMATTING"
+fi
+
+popd
+
+exec java \
+  -jar "$DETEKT_DIR/$FILE_CLI" \
+  --plugins "$DETEKT_DIR/$FILE_FORMATTING" \
+  "$@"
